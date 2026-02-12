@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBT Mitra - Aadhaar & DBT Awareness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .slide {
+            display: none;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .slide.active {
+            display: block;
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        /* Gamification Styles */
+        .point-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #10B981; /* green-500 */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 100;
+            opacity: 0;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .point-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Chatbot Styles */
+        #chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        #chatbot-toggle {
+            background-color: #2563EB;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        #chatbot-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+            transform-origin: bottom right;
+            pointer-events: none;
+        }
+        #chatbot-window.open {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        /* Multi-language */
+        [data-lang]:not([data-lang="en"]) { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-blue-600">DBT Mitra</a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#home" class="text-gray-600 hover:text-blue-600"><span data-lang="en">Home</span><span data-lang="hi">होम</span><span data-lang="mr">मुख्यपृष्ठ</span><span data-lang="bn">হোম</span><span data-lang="ta">முகப்பு</span><span data-lang="te">హోమ్</span></a>
+                <a href="#quiz" class="text-gray-600 hover:text-blue-600"><span data-lang="en">Check Status</span><span data-lang="hi">स्थिति जांचें</span><span data-lang="mr">स्थिती तपासा</span><span data-lang="bn">স্ট্যাটাস চেক করুন</span><span data-lang="ta">நிலையைச் சரிபார்க்கவும்</span><span data-lang="te">స్థితిని తనిఖీ చేయండి</span></a>
+                <a href="#dashboard" class="text-gray-600 hover:text-blue-600"><span data-lang="en">Dashboard</span><span data-lang="hi">डैशबोर्ड</span><span data-lang="mr">डॅशबोर्ड</span><span data-lang="bn">ড্যাশবোর্ড</span><span data-lang="ta">டாஷ்போர்டு</span><span data-lang="te">డాష్‌బోర్డ్</span></a>
+                 <a href="#game" class="text-gray-600 hover:text-blue-600"><span data-lang="en">Game</span><span data-lang="hi">खेल</span><span data-lang="mr">खेळ</span><span data-lang="bn">খেলা</span><span data-lang="ta">விளையாட்டு</span><span data-lang="te">ఆట</span></a>
+                <a href="#socials" class="text-gray-600 hover:text-blue-600"><span data-lang="en">Socials</span><span data-lang="hi">सोशल</span><span data-lang="mr">सोशल</span><span data-lang="bn">সোশ্যাল</span><span data-lang="ta">சமூகம்</span><span data-lang="te">సోషల్స్</span></a>
+                <a href="#faq" class="text-gray-600 hover:text-blue-600"><span data-lang="en">FAQ</span><span data-lang="hi">FAQ</span><span data-lang="mr">FAQ</span><span data-lang="bn">FAQ</span><span data-lang="ta">FAQ</span><span data-lang="te">FAQ</span></a>
+                <a href="#support" class="text-gray-600 hover:text-blue-600"><span data-lang="en">Support</span><span data-lang="hi">सहायता</span><span data-lang="mr">समर्थन</span><span data-lang="bn">সমর্থন</span><span data-lang="ta">ஆதரவு</span><span data-lang="te">మద్దతు</span></a>
+                <div class="relative">
+                     <select id="language-switcher" class="bg-gray-100 border border-gray-300 rounded-md py-1 px-2 text-gray-700">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी</option>
+                        <option value="mr">मराठी</option>
+                        <option value="bn">বাংলা</option>
+                        <option value="ta">தமிழ்</option>
+                        <option value="te">తెలుగు</option>
+                    </select>
+                </div>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+              <a href="#home" class="block py-2 text-gray-600 hover:text-blue-600"><span data-lang="en">Home</span><span data-lang="hi">होम</span><span data-lang="mr">मुख्यपृष्ठ</span><span data-lang="bn">হোম</span><span data-lang="ta">முகப்பு</span><span data-lang="te">హోమ్</span></a>
+              <a href="#quiz" class="block py-2 text-gray-600 hover:text-blue-600"><span data-lang="en">Check Status</span><span data-lang="hi">स्थिति जांचें</span><span data-lang="mr">स्थिती तपासा</span><span data-lang="bn">স্ট্যাটাস চেক করুন</span><span data-lang="ta">நிலையைச் சரிபார்க்கவும்</span><span data-lang="te">స్థితిని తనిఖీ చేయండి</span></a>
+              <a href="#dashboard" class="block py-2 text-gray-600 hover:text-blue-600"><span data-lang="en">Dashboard</span><span data-lang="hi">डैशबोर्ड</span><span data-lang="mr">डॅशबोर्ड</span><span data-lang="bn">ড্যাশবোর্ড</span><span data-lang="ta">டாஷ்போர்டு</span><span data-lang="te">డాష్‌బోర్డ్</span></a>
+              <a href="#game" class="block py-2 text-gray-600 hover:text-blue-600"><span data-lang="en">Game</span><span data-lang="hi">खेल</span><span data-lang="mr">खेळ</span><span data-lang="bn">খেলা</span><span data-lang="ta">விளையாட்டு</span><span data-lang="te">ఆట</span></a>
+              <a href="#socials" class="block py-2 text-gray-600 hover:text-blue-600"><span data-lang="en">Socials</span><span data-lang="hi">सोशल</span><span data-lang="mr">सोशल</span><span data-lang="bn">সোশ্যাল</span><span data-lang="ta">சமூகம்</span><span data-lang="te">సోషల్స్</span></a>
+              <a href="#faq" class="block py-2 text-gray-600 hover:text-blue-600"><span data-lang="en">FAQ</span><span data-lang="hi">FAQ</span><span data-lang="mr">FAQ</span><span data-lang="bn">FAQ</span><span data-lang="ta">FAQ</span><span data-lang="te">FAQ</span></a>
+              <a href="#support" class="block py-2 text-gray-600 hover:text-blue-600"><span data-lang="en">Support</span><span data-lang="hi">सहायता</span><span data-lang="mr">समर्थन</span><span data-lang="bn">সমর্থন</span><span data-lang="ta">ஆதரவு</span><span data-lang="te">మద్దతు</span></a>
+        </div>
+    </header>
+
+    <!-- Gamification Header -->
+    <div id="gamification-header" class="sticky top-[68px] z-40 bg-white shadow-md">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
+                <span class="font-bold text-lg text-blue-700">
+                    <span data-lang="en">Your Awareness Score</span><span data-lang="hi">आपका जागरूकता स्कोर</span><span data-lang="mr">तुमचा जागरूकता स्कोअर</span><span data-lang="bn">আপনার সচেতনতা স্কোর</span><span data-lang="ta">உங்கள் விழிப்புணர்வு மதிப்பெண்</span><span data-lang="te">మీ అవగాహన స్కోరు</span>: <span id="awareness-score">0</span></span>
+                <div class="w-full sm:w-1/2 bg-gray-200 rounded-full h-4">
+                    <div id="progress-bar" class="bg-green-500 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Slideshow Section -->
+        <section id="home" class="bg-white py-12 md:py-20">
+            <div class="container mx-auto px-6">
+                <h1 class="text-3xl md:text-5xl font-bold text-center mb-4">
+                    <span data-lang="en">Understand Your Bank Account</span><span data-lang="hi">अपने बैंक खाते को समझें</span><span data-lang="mr">तुमचे बँक खाते समजून घ्या</span><span data-lang="bn">আপনার ব্যাংক অ্যাকাউন্ট বুঝুন</span><span data-lang="ta">உங்கள் வங்கிக் கணக்கைப் புரிந்து கொள்ளுங்கள்</span><span data-lang="te">మీ బ్యాంక్ ఖాతాను అర్థం చేసుకోండి</span>
+                </h1>
+                <p class="text-lg text-gray-600 text-center mb-12 max-w-3xl mx-auto">
+                    <span data-lang="en">Learn the crucial difference between a simple Aadhaar-linked account and a DBT-enabled, Aadhaar-seeded account for receiving government benefits.</span><span data-lang="hi">सरकारी लाभ प्राप्त करने के लिए एक साधारण आधार-लिंक्ड खाते और डीबीटी-सक्षम, आधार-सीडेड खाते के बीच महत्वपूर्ण अंतर जानें।</span><span data-lang="mr">सरकारी लाभ मिळवण्यासाठी साधे आधार-लिंक्ड खाते आणि डीबीटी-सक्षम, आधार-सीडेड खाते यातील महत्त्वाचा फरक जाणून घ्या.</span><span data-lang="bn">সরকারি সুবিধা পাওয়ার জন্য একটি সাধারণ আধার-লিঙ্কযুক্ত অ্যাকাউন্ট এবং একটি ডিবিটি-সক্ষম, আধার-সিডেড অ্যাকাউন্টের মধ্যে গুরুত্বপূর্ণ পার্থক্য জানুন।</span><span data-lang="ta">அரசுப் பலன்களைப் பெறுவதற்கு, எளிய ஆதார் இணைக்கப்பட்ட கணக்கிற்கும், DBT-ప్రారంభించబడిన, ஆதார் விதைக்கப்பட்ட கணக்கிற்கும் உள்ள முக்கியமான வித்தியாசத்தைத் தெரிந்துகொள்ளுங்கள்.</span><span data-lang="te">ప్రభుత్వ ప్రయోజనాలను స్వీకరించడానికి సాధారణ ఆధార్-లింక్డ్ ఖాతా మరియు DBT-ప్రారంభించబడిన, ఆధార్-సీడ్ చేయబడిన ఖాతా మధ్య కీలకమైన వ్యత్యాసాన్ని తెలుసుకోండి.</span>
+                </p>
+                <!-- Slideshow content remains here -->
+                 <div id="slideshow-container" class="relative max-w-4xl mx-auto bg-blue-50 p-8 rounded-2xl shadow-lg">
+                    <!-- Slides -->
+                    <div id="slides">
+                        <div class="slide active">
+                             <div class="text-center">
+                                 <h2 class="text-2xl md:text-3xl font-bold text-blue-700 mb-4">
+                                     <span data-lang="en">What is an Aadhaar-Linked Bank Account?</span>
+                                     <span data-lang="hi">आधार-लिंक्ड बैंक खाता क्या है?</span>
+                                     <span data-lang="mr">आधार-लिंक्ड बँक खाते म्हणजे काय?</span>
+                                     <span data-lang="bn">আধার-লিঙ্কযুক্ত ব্যাংক অ্যাকাউন্ট কী?</span>
+                                     <span data-lang="ta">ஆதார்-இணைக்கப்பட்ட வங்கிக் கணக்கு என்றால் என்ன?</span>
+                                     <span data-lang="te">ఆధార్-లింక్డ్ బ్యాంక్ ఖాతా అంటే ఏమిటి?</span>
+                                 </h2>
+                                 <p class="text-gray-700 md:text-lg">
+                                     <span data-lang="en">This is a basic connection. It means you've used your Aadhaar for e-KYC (Know Your Customer) to open or verify your bank account. It primarily serves as an identity proof.</span>
+                                     <span data-lang="hi">यह एक सामान्य कनेक्शन है। इसका मतलब है कि आपने अपना बैंक खाता खोलने या सत्यापित करने के लिए ई-केवाईसी (अपने ग्राहक को जानें) के लिए अपने आधार का उपयोग किया है। यह मुख्य रूप से पहचान प्रमाण के रूप में कार्य करता है।</span>
+                                     <span data-lang="mr">हे एक मूलभूत कनेक्शन आहे. याचा अर्थ तुम्ही तुमचे बँक खाते उघडण्यासाठी किंवा सत्यापित करण्यासाठी ई-केवायसी (तुमच्या ग्राहकाला जाणून घ्या) साठी तुमच्या आधारचा वापर केला आहे. हे प्रामुख्याने ओळख पुरावा म्हणून काम करते.</span>
+                                     <span data-lang="bn">এটি একটি বেসিক সংযোগ। এর মানে হল আপনি আপনার ব্যাংক অ্যাকাউন্ট খুলতে বা যাচাই করতে ই-কেওয়াইসি (আপনার গ্রাহককে জানুন) এর জন্য আপনার আধার ব্যবহার করেছেন। এটি প্রাথমিকভাবে পরিচয় প্রমাণ হিসাবে কাজ করে।</span>
+                                     <span data-lang="ta">இது ஒரு அடிப்படை இணைப்பு. உங்கள் வங்கிக் கணக்கைத் திறக்க அல்லது சரிபார்க்க, இ-கேஒய்சி (உங்கள் வாடிக்கையாளரை அறிந்து கொள்ளுங்கள்) க்கு உங்கள் ஆதாரைப் பயன்படுத்தியுள்ளீர்கள் என்று அர்த்தம். இது முதன்மையாக அடையாளச் சான்றாகச் செயல்படுகிறது.</span>
+                                     <span data-lang="te">ఇది ఒక ప్రాథమిక కనెక్షన్. అంటే మీరు మీ బ్యాంక్ ఖాతాను తెరవడానికి లేదా ధృవీకరించడానికి ఇ-కెవైసి (మీ కస్టమర్‌ను తెలుసుకోండి) కోసం మీ ఆధార్‌ను ఉపయోగించారు. ఇది ప్రాథమికంగా గుర్తింపు రుజువుగా పనిచేస్తుంది.</span>
+                                 </p>
+                             </div>
+                        </div>
+                        <div class="slide">
+                             <div class="text-center">
+                                 <h2 class="text-2xl md:text-3xl font-bold text-green-700 mb-4">
+                                     <span data-lang="en">What is a DBT-Enabled / Aadhaar-Seeded Account?</span>
+                                     <span data-lang="hi">डीबीटी-सक्षम / आधार-सीडेड खाता क्या है?</span>
+                                     <span data-lang="mr">डीबीटी-सक्षम / आधार-सीडेड खाते म्हणजे काय?</span>
+                                     <span data-lang="bn">ডিবিটি-সক্ষম / আধার-সিডেড অ্যাকাউন্ট কী?</span>
+                                     <span data-lang="ta">டிபிடி-இயக்கப்பட்ட / ஆதார்-விதைக்கப்பட்ட கணக்கு என்றால் என்ன?</span>
+                                     <span data-lang="te">డిబిటి-ప్రారంభించబడిన / ఆధార్-సీడ్ చేయబడిన ఖాతా అంటే ఏమిటి?</span>
+                                 </h2>
+                                 <p class="text-gray-700 md:text-lg">
+                                     <span data-lang="en">This is a special linkage done via an NPCI mapper. It explicitly tells the government which specific account should receive Direct Benefit Transfers (DBTs) like scholarships, pensions, and subsidies.</span>
+                                     <span data-lang="hi">यह एनपीसीआई मैपर के माध्यम से किया गया एक विशेष लिंकेज है। यह सरकार को स्पष्ट रूप से बताता है कि किस विशिष्ट खाते को छात्रवृत्ति, पेंशन और सब्सिडी जैसे प्रत्यक्ष लाभ हस्तांतरण (डीबीटी) प्राप्त होने चाहिए।</span>
+                                     <span data-lang="mr">हे एनपीसीआय मॅपरद्वारे केलेले एक विशेष लिंकेज आहे. हे सरकारला स्पष्टपणे सांगते की कोणत्या विशिष्ट खात्यात शिष्यवृत्ती, पेन्शन आणि सबसिडीसारखे थेट लाभ हस्तांतरण (डीबीटी) प्राप्त झाले पाहिजे.</span>
+                                     <span data-lang="bn">এটি এনপিসিআই ম্যাপারের মাধ্যমে করা একটি বিশেষ লিঙ্কেজ। এটি সরকারকে স্পষ্টভাবে বলে যে কোন নির্দিষ্ট অ্যাকাউন্টে বৃত্তি, পেনশন এবং ভর্তুকির মতো সরাসরি সুবিধা স্থানান্তর (ডিবিটি) গ্রহণ করা উচিত।</span>
+                                     <span data-lang="ta">இது என்பிசிஐ மேப்பர் மூலம் செய்யப்படும் ஒரு சிறப்பு இணைப்பு. உதவித்தொகை, ஓய்வூதியம் மற்றும் மானியங்கள் போன்ற நேரடிப் பலன் பரிமாற்றங்களை (டிபிடி) எந்தக் குறிப்பிட்ட கணக்கு பெற வேண்டும் என்பதை இது அரசாங்கத்திற்குத் தெளிவாகத் தெரிவிக்கிறது.</span>
+                                     <span data-lang="te">ఇది ఎన్‌పిసిఐ మ్యాపర్ ద్వారా చేయబడిన ఒక ప్రత్యేక అనుసంధానం. స్కాలర్‌షిప్‌లు, పెన్షన్‌లు మరియు సబ్సిడీల వంటి ప్రత్యక్ష ప్రయోజన బదిలీలను (డిబిటి) ఏ నిర్దిష్ట ఖాతా స్వీకరించాలో ఇది ప్రభుత్వానికి స్పష్టంగా చెబుతుంది.</span>
+                                 </p>
+                             </div>
+                        </div>
+                        <div class="slide">
+                            <div class="text-center">
+                                 <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
+                                     <span data-lang="en">The Key Difference</span>
+                                     <span data-lang="hi">मुख्य अंतर</span>
+                                     <span data-lang="mr">मुख्य फरक</span>
+                                     <span data-lang="bn">মূল পার্থক্য</span>
+                                     <span data-lang="ta">முக்கிய வேறுபாடு</span>
+                                     <span data-lang="te">కీలక వ్యత్యాసం</span>
+                                 </h2>
+                                 <div class="flex flex-col md:flex-row justify-center gap-8">
+                                     <div class="flex-1 bg-white p-6 rounded-lg border border-blue-200">
+                                         <h3 class="font-bold text-xl text-blue-700">
+                                            <span data-lang="en">Aadhaar-Linked</span><span data-lang="hi">आधार-लिंक्ड</span><span data-lang="mr">आधार-लिंक्ड</span><span data-lang="bn">আধার-লিঙ্কযুক্ত</span><span data-lang="ta">ஆதார்-இணைக்கப்பட்டது</span><span data-lang="te">ఆధార్-లింక్డ్</span>
+                                         </h3>
+                                         <p class="mt-2 text-gray-600">
+                                             <span data-lang="en">✓ Confirms your identity.</span><span data-lang="hi">✓ आपकी पहचान की पुष्टि करता है।</span><span data-lang="mr">✓ तुमची ओळख निश्चित करते.</span><span data-lang="bn">✓ আপনার পরিচয় নিশ্চিত করে।</span><span data-lang="ta">✓ உங்கள் அடையாளத்தை உறுதி செய்கிறது.</span><span data-lang="te">✓ మీ గుర్తింపును నిర్ధారిస్తుంది.</span>
+                                         </p>
+                                         <p class="mt-1 text-gray-600">
+                                             <span data-lang="en">✗ DOES NOT guarantee you'll receive DBT funds in that account.</span><span data-lang="hi">✗ उस खाते में डीबीटी फंड प्राप्त होने की गारंटी नहीं देता है।</span><span data-lang="mr">✗ त्या खात्यात डीबीटी निधी मिळण्याची हमी देत नाही.</span><span data-lang="bn">✗ সেই অ্যাকাউন্টে ডিবিটি তহবিল পাওয়ার নিশ্চয়তা দেয় না।</span><span data-lang="ta">✗ அந்தக் கணக்கில் டிபிடி நிதியைப் பெறுவதற்கு உத்தரவாதம் அளிக்காது.</span><span data-lang="te">✗ ఆ ఖాతాలో డిబిటి నిధులను స్వీకరించడానికి హామీ ఇవ్వదు.</span>
+                                         </p>
+                                     </div>
+                                     <div class="flex-1 bg-white p-6 rounded-lg border border-green-200">
+                                         <h3 class="font-bold text-xl text-green-700">
+                                             <span data-lang="en">DBT-Enabled (Seeded)</span><span data-lang="hi">डीबीटी-सक्षम (सीडेड)</span><span data-lang="mr">डीबीटी-सक्षम (सीडेड)</span><span data-lang="bn">ডিবিটি-সক্ষম (সিডেড)</span><span data-lang="ta">டிபிடி-இயக்கப்பட்டது (விதைக்கப்பட்டது)</span><span data-lang="te">డిబిటి-ప్రారంభించబడినది (సీడ్ చేయబడింది)</span>
+                                         </h3>
+                                         <p class="mt-2 text-gray-600">
+                                             <span data-lang="en">✓ Confirms your identity.</span><span data-lang="hi">✓ आपकी पहचान की पुष्टि करता है।</span><span data-lang="mr">✓ तुमची ओळख निश्चित करते.</span><span data-lang="bn">✓ আপনার পরিচয় নিশ্চিত করে।</span><span data-lang="ta">✓ உங்கள் அடையாளத்தை உறுதி செய்கிறது.</span><span data-lang="te">✓ మీ గుర్తింపును నిర్ధారిస్తుంది.</span>
+                                         </p>
+                                         <p class="mt-1 text-gray-600">
+                                             <span data-lang="en">✓ GUARANTEES you'll receive DBT funds in THIS specific account.</span><span data-lang="hi">✓ इस विशिष्ट खाते में डीबीटी फंड प्राप्त होने की गारंटी देता है।</span><span data-lang="mr">✓ या विशिष्ट खात्यात डीबीटी निधी मिळण्याची हमी देते.</span><span data-lang="bn">✓ এই নির্দিষ্ট অ্যাকাউন্টে ডিবিটি তহবিল পাওয়ার নিশ্চয়তা দেয়।</span><span data-lang="ta">✓ இந்தக் குறிப்பிட்ட கணக்கில் டிபிடி நிதியைப் பெறுவதற்கு உத்தரவாதம் அளிக்கிறது.</span><span data-lang="te">✓ ఈ నిర్దిష్ట ఖాతాలో డిబిటి నిధులను స్వీకరించడానికి హామీ ఇస్తుంది.</span>
+                                         </p>
+                                     </div>
+                                 </div>
+                                 <p class="mt-6 text-gray-600">
+                                    <span data-lang="en">You can have many Aadhaar-linked accounts, but only ONE can be DBT-enabled at a time.</span>
+                                    <span data-lang="hi">आपके पास कई आधार-लिंक्ड खाते हो सकते हैं, लेकिन एक समय में केवल एक ही डीबीटी-सक्षम हो सकता है।</span>
+                                    <span data-lang="mr">तुमची अनेक आधार-लिंक्ड खाती असू शकतात, परंतु एका वेळी फक्त एकच डीबीटी-सक्षम असू शकते.</span>
+                                    <span data-lang="bn">আপনার একাধিক আধার-লিঙ্কযুক্ত অ্যাকাউন্ট থাকতে পারে, তবে একবারে কেবল একটি ডিবিটি-সক্ষম হতে পারে।</span>
+                                    <span data-lang="ta">உங்களிடம் பல ஆதார்-இணைக்கப்பட்ட கணக்குகள் இருக்கலாம், ஆனால் ஒரு நேரத்தில் ஒன்று மட்டுமே டிபிடி-இயக்கப்பட்டதாக இருக்க முடியும்.</span>
+                                    <span data-lang="te">మీరు అనేక ఆధార్-లింక్డ్ ఖాతాలను కలిగి ఉండవచ్చు, కానీ ఒక సమయంలో ఒకటి మాత్రమే డిబిటి-ప్రారంభించబడుతుంది.</span>
+                                 </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Navigation -->
+                    <button id="prev-slide" class="absolute top-1/2 left-0 md:-left-4 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition">
+                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button id="next-slide" class="absolute top-1/2 right-0 md:-right-4 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition">
+                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+                 <div id="slide-dots" class="flex justify-center mt-6 space-x-2"></div>
+            </div>
+        </section>
+
+        <!-- DBT Wallet Dashboard -->
+        <section id="dashboard" class="py-16 md:py-24 bg-blue-50">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-8">
+                    <span data-lang="en">DBT Wallet Dashboard</span><span data-lang="hi">डीबीटी वॉलेट डैशबोर्ड</span><span data-lang="mr">डीबीटी वॉलेट डॅशबोर्ड</span><span data-lang="bn">ডিবিটি ওয়ালেট ড্যাশবোর্ড</span><span data-lang="ta">டிபிடி வாலட் டாஷ்போர்டு</span><span data-lang="te">డిబిటి వాలెట్ డాష్‌బోర్డ్</span>
+                </h2>
+                <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg text-left">
+                    <div class="flex flex-col sm:flex-row justify-between items-start mb-6 pb-6 border-b">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">Anjali Sharma</h3>
+                            <p class="text-gray-500">Aadhaar: XXXX-XXXX-4321</p>
+                        </div>
+                        <div class="mt-4 sm:mt-0 text-right">
+                             <p class="text-gray-600 font-semibold">
+                                 <span data-lang="en">DBT Account</span><span data-lang="hi">डीबीटी खाता</span><span data-lang="mr">डीबीटी खाते</span><span data-lang="bn">ডিবিটি অ্যাকাউন্ট</span><span data-lang="ta">டிபிடி கணக்கு</span><span data-lang="te">డిబిటి ఖాతా</span>:</p>
+                             <p class="text-green-600 font-bold">State Bank of India - XX1598</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-700 mb-4">
+                            <span data-lang="en">Expected Scholarship Status</span><span data-lang="hi">अपेक्षित छात्रवृत्ति स्थिति</span><span data-lang="mr">अपेक्षित शिष्यवृत्तीची स्थिती</span><span data-lang="bn">প্রত্যাশিত স্কলারশিপের স্থিতি</span><span data-lang="ta">எதிர்பார்க்கப்படும் ஸ்காலர்ஷிப் நிலை</span><span data-lang="te">ఆశించిన స్కాలర్‌షిప్ స్థితి</span>
+                        </h4>
+                        <div class="space-y-4">
+                             <div class="flex justify-between items-center bg-gray-50 p-4 rounded-lg">
+                                 <div>
+                                     <p class="font-semibold">National Merit Scholarship</p>
+                                     <p class="text-sm text-gray-500">Credited on: 10 Sep 2025</p>
+                                 </div>
+                                 <span class="font-bold text-green-600 bg-green-100 px-3 py-1 rounded-full">Credited</span>
+                             </div>
+                             <div class="flex justify-between items-center bg-gray-50 p-4 rounded-lg">
+                                 <div>
+                                     <p class="font-semibold">State Education Grant</p>
+                                     <p class="text-sm text-gray-500">Expected by: 30 Sep 2025</p>
+                                 </div>
+                                 <span class="font-bold text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full">Pending</span>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DigiLocker Integration -->
+        <section id="digilocker" class="py-16 md:py-24">
+             <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    <span data-lang="en">Official Verification</span><span data-lang="hi">आधिकारिक सत्यापन</span><span data-lang="mr">अधिकृत पडताळणी</span><span data-lang="bn">অফিসিয়াল যাচাইকরণ</span><span data-lang="ta">அதிகாரப்பூர்வ சரிபார்ப்பு</span><span data-lang="te">అధికారిక ధృవీకరణ</span>
+                </h2>
+                <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+                    <span data-lang="en">Verify your status and get a downloadable DBT-Enabled certificate via DigiLocker.</span><span data-lang="hi">अपनी स्थिति सत्यापित करें और डिजिलॉकर के माध्यम से डाउनलोड करने योग्य डीबीटी-सक्षम प्रमाणपत्र प्राप्त करें।</span><span data-lang="mr">तुमची स्थिती सत्यापित करा आणि डिजिलॉकरद्वारे डाउनलोड करण्यायोग्य डीबीटी-सक्षम प्रमाणपत्र मिळवा.</span><span data-lang="bn">আপনার স্ট্যাটাস যাচাই করুন এবং ডিজিલોকার মাধ্যমে একটি ডাউনলোডযোগ্য ডিবিটি-সক্ষম শংসাপত্র পান।</span><span data-lang="ta">உங்கள் நிலையைச் சரிபார்த்து, டிஜிலாக்கர் வழியாகப் பதிவிறக்கக்கூடிய DBT-ప్రారంభించబడిన சான்றிதழைப் பெறுங்கள்.</span><span data-lang="te">మీ స్థితిని ధృవీకరించండి మరియు డిజిలాకర్ ద్వారా డౌన్‌లోడ్ చేయగల DBT-ప్రారంభించబడిన ప్రమాణపత్రాన్ని పొందండి.</span>
+                </p>
+                <div id="digilocker-start">
+                    <button id="connect-digilocker" class="bg-blue-600 text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:bg-blue-700 transition-transform hover:scale-105">
+                        Connect with DigiLocker
+                    </button>
+                </div>
+                <div id="digilocker-certificate" class="hidden max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-2xl text-left border-4 border-green-500">
+                    <div class="text-center mb-6">
+                        <img src="https://placehold.co/100x100/10B981/FFFFFF?text=Verified" class="mx-auto rounded-full" alt="Verified Badge">
+                        <h3 class="text-2xl font-bold text-green-700 mt-4">DBT Enabled Certificate</h3>
+                        <p class="text-gray-500">Issued via DigiLocker</p>
+                    </div>
+                    <p class="mb-2"><strong>Name:</strong> Anjali Sharma</p>
+                    <p class="mb-2"><strong>Aadhaar (last 4 digits):</strong> 4321</p>
+                    <p class="mb-4"><strong>DBT Seeded Bank:</strong> State Bank of India (XXXX1598)</p>
+                    <p class="text-green-600 font-semibold text-center border-t pt-4 mt-4">This certifies that the above Aadhaar is successfully seeded to the mentioned bank account for receiving Direct Benefit Transfers as per NPCI records.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Interactive Question Section -->
+        <section id="quiz" class="py-16 md:py-24 bg-gray-100">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-8">
+                    <span data-lang="en">Is Your Account Ready for Benefits?</span><span data-lang="hi">क्या आपका खाता लाभ के लिए तैयार है?</span><span data-lang="mr">तुमचे खाते लाभांसाठी तयार आहे کا?</span><span data-lang="bn">আপনার অ্যাকাউন্ট কি সুবিধার জন্য প্রস্তুত?</span><span data-lang="ta">உங்கள் கணக்கு பலன்களுக்குத் தயாரா?</span><span data-lang="te">మీ ఖాతా ప్రయోజనాల కోసం సిద్ధంగా ఉందా?</span>
+                </h2>
+                <p class="text-lg text-gray-600 mb-12 max-w-3xl mx-auto">
+                    <span data-lang="en">Select an option below to find out more and get the right information for your situation.</span><span data-lang="hi">अधिक जानने के लिए और अपनी स्थिति के लिए सही जानकारी प्राप्त करने के लिए नीचे एक विकल्प चुनें।</span><span data-lang="mr">अधिक जाणून घेण्यासाठी आणि तुमच्या परिस्थितीसाठी योग्य माहिती मिळवण्यासाठी खालील पर्याय निवडा.</span><span data-lang="bn">আপনার পরিস্থিতি সম্পর্কে আরও জানতে এবং সঠিক তথ্য পেতে নীচের একটি বিকল্প নির্বাচন করুন।</span><span data-lang="ta">மேலும் அறிய மற்றும் உங்கள் சூழ்நிலைக்கான சரியான தகவலைப் பெற கீழே உள்ள விருப்பத்தைத் தேர்ந்தெடுக்கவும்.</span><span data-lang="te">మరింత తెలుసుకోవడానికి మరియు మీ పరిస్థితికి సరైన సమాచారాన్ని పొందడానికి దిగువ ఒక ఎంపికను ఎంచుకోండి.</span>
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <a href="response-yes.html" class="group block bg-white p-8 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                        <h3 class="text-2xl font-bold text-green-600"><span data-lang="en">Yes</span><span data-lang="hi">हाँ</span><span data-lang="mr">होय</span><span data-lang="bn">হ্যাঁ</span><span data-lang="ta">ஆம்</span><span data-lang="te">అవును</span></h3>
+                        <p class="mt-2 text-gray-500"><span data-lang="en">I'm sure my account is DBT-enabled.</span><span data-lang="hi">मुझे यकीन है कि मेरा खाता डीबीटी-सक्षम है।</span><span data-lang="mr">मला खात्री आहे की माझे खाते डीबीटी-सक्षम आहे.</span><span data-lang="bn">আমি নিশ্চিত যে আমার অ্যাকাউন্ট ডিবিটি-সক্ষম।</span><span data-lang="ta">எனது கணக்கு DBT-இயக்கப்பட்டது என்பதில் நான் உறுதியாக உள்ளேன்.</span><span data-lang="te">నా ఖాతా DBT-ప్రారంభించబడిందని నేను ఖచ్చితంగా అనుకుంటున్నాను.</span></p>
+                    </a>
+                    <a href="response-no.html" class="group block bg-white p-8 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                        <h3 class="text-2xl font-bold text-red-600"><span data-lang="en">No</span><span data-lang="hi">नहीं</span><span data-lang="mr">नाही</span><span data-lang="bn">না</span><span data-lang="ta">இல்லை</span><span data-lang="te">లేదు</span></h3>
+                        <p class="mt-2 text-gray-500"><span data-lang="en">I know my account isn't DBT-enabled.</span><span data-lang="hi">मुझे पता है कि मेरा खाता डीबीटी-सक्षम नहीं है।</span><span data-lang="mr">मला माहित आहे की माझे खाते डीबीटी-सक्षम नाही.</span><span data-lang="bn">আমি জানি আমার অ্যাকাউন্ট ডিবিটি-সক্ষম নয়।</span><span data-lang="ta">எனது கணக்கு DBT-இயக்கப்படவில்லை என்பது எனக்குத் தெரியும்.</span><span data-lang="te">నా ఖాతా DBT-ప్రారంభించబడలేదని నాకు తెలుసు.</span></p>
+                    </a>
+                    <a href="response-maybe.html" class="group block bg-white p-8 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                        <h3 class="text-2xl font-bold text-yellow-600"><span data-lang="en">Maybe</span><span data-lang="hi">शायद</span><span data-lang="mr">कदाचित</span><span data-lang="bn">হতে পারে</span><span data-lang="ta">இருக்கலாம்</span><span data-lang="te">కావచ్చు</span></h3>
+                        <p class="mt-2 text-gray-500"><span data-lang="en">I think it is, but I'm not 100% sure.</span><span data-lang="hi">मुझे लगता है कि यह है, लेकिन मुझे 100% यकीन नहीं है।</span><span data-lang="mr">मला वाटते ते आहे, पण मला 100% खात्री नाही.</span><span data-lang="bn">আমি মনে করি এটি, কিন্তু আমি 100% নিশ্চিত নই।</span><span data-lang="ta">நான் அப்படி நினைக்கிறேன், ஆனால் எனக்கு 100% உறுதியாக தெரியவில்லை.</span><span data-lang="te">అని నేను అనుకుంటున్నాను, కానీ నాకు 100% ఖచ్చితంగా తెలియదు.</span></p>
+                    </a>
+                    <a href="response-idk.html" class="group block bg-white p-8 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                        <h3 class="text-2xl font-bold text-gray-600"><span data-lang="en">I Don't Know</span><span data-lang="hi">मुझे नहीं पता</span><span data-lang="mr">मला माहित नाही</span><span data-lang="bn">আমি জানি না</span><span data-lang="ta">எனக்குத் தெரியாது</span><span data-lang="te">నాకు తెలియదు</span></h3>
+                        <p class="mt-2 text-gray-500"><span data-lang="en">I don't know the difference or how to check.</span><span data-lang="hi">मुझे अंतर या जांच करने का तरीका नहीं पता है।</span><span data-lang="mr">मला फरक किंवा कसे तपासायचे हे माहित नाही.</span><span data-lang="bn">আমি পার্থক্য বা কিভাবে চেক করতে হয় জানি না।</span><span data-lang="ta">வித்தியாசம் அல்லது எப்படிச் சரிபார்ப்பது என்று எனக்குத் தெரியவில்லை.</span><span data-lang="te">నాకు తేడా లేదా ఎలా తనిఖీ చేయాలో తెలియదు.</span></p>
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Mini-Game Section -->
+        <section id="game" class="py-16 md:py-24">
+            <div class="container mx-auto px-6 text-center">
+                 <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                     <span data-lang="en">DBT Awareness Game</span><span data-lang="hi">डीबीटी जागरूकता खेल</span><span data-lang="mr">डीबीटी जागरूकता खेळ</span><span data-lang="bn">ডিবিটি সচেতনতা খেলা</span><span data-lang="ta">டிபிடி விழிப்புணர்வு விளையாட்டு</span><span data-lang="te">డిబిటి అవగాహన గేమ్</span>
+                </h2>
+                 <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+                     <span data-lang="en">A student has three bank accounts. Which one will receive the scholarship? Choose wisely!</span><span data-lang="hi">एक छात्र के तीन बैंक खाते हैं। छात्रवृत्ति किसे मिलेगी? बुद्धिमानी से चुनना!</span><span data-lang="mr">एका विद्यार्थ्याची तीन बँक खाती आहेत. शिष्यवृत्ती कोणाला मिळणार? हुशारीने निवडा!</span><span data-lang="bn">একজন ছাত্রের তিনটি ব্যাংক অ্যাকাউন্ট আছে। কে স্কলারশিপ পাবে? বুদ্ধি করে পছন্দ কর!</span><span data-lang="ta">ஒரு மாணவருக்கு மூன்று வங்கிக் கணக்குகள் உள்ளன. உதவித்தொகை யாருக்கு கிடைக்கும்? புத்திசாலித்தனமாகத் தேர்ந்தெடுங்கள்!</span><span data-lang="te">ఒక విద్యార్థికి మూడు బ్యాంకు ఖాతాలు ఉన్నాయి. స్కాలర్‌షిప్ ఎవరికి అందుతుంది? తెలివిగా ఎంచుకోండి!</span>
+                </p>
+                 <div id="game-container" class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <button class="game-option p-6 border-2 border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
+                            <h4 class="font-bold text-lg">Bank A</h4>
+                            <p class="text-sm text-gray-500">Aadhaar used for KYC</p>
+                        </button>
+                        <button class="game-option p-6 border-2 border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition" data-correct="true">
+                            <h4 class="font-bold text-lg">Bank B</h4>
+                            <p class="text-sm text-gray-500">Aadhaar Seeded via NPCI</p>
+                        </button>
+                        <button class="game-option p-6 border-2 border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
+                            <h4 class="font-bold text-lg">Bank C</h4>
+                            <p class="text-sm text-gray-500">Mobile number linked</p>
+                        </button>
+                    </div>
+                    <div id="game-result" class="mt-6 text-center font-bold"></div>
+                    <div id="badge-container" class="hidden mt-4 items-center justify-center bg-green-100 text-green-800 p-4 rounded-lg">
+                        <span class="text-2xl mr-3">🏆</span>
+                        <div>
+                        <p class="font-bold">DBT Expert Badge Unlocked!</p>
+                        <p class="text-sm">+15 Awareness Points!</p>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </section>
+
+        <!-- Low Internet / SMS Section -->
+        <section id="sms-support" class="py-16 md:py-24 bg-gray-800 text-white">
+            <div class="container mx-auto px-6 text-center">
+                 <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                     <span data-lang="en">No Internet? No Problem!</span><span data-lang="hi">कोई इंटरनेट नहीं? कोई बात नहीं!</span><span data-lang="mr">इंटरनेट नाही? काही अडचण नाही!</span><span data-lang="bn">ইন্টারনেট নেই? সমস্যা নেই!</span><span data-lang="ta">இணையம் இல்லையா? எந்த பிரச்சினையும் இல்லை!</span><span data-lang="te">ఇంటర్నెట్ లేదా? ఏమి ఇబ్బంది లేదు!</span>
+                </h2>
+                 <p class="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
+                     <span data-lang="en">Check your DBT status easily using your phone's dialer, even without an internet connection.</span><span data-lang="hi">बिना इंटरनेट कनेक्शन के भी अपने फोन के डायलर का उपयोग करके आसानी से अपनी डीबीटी स्थिति की जांच करें।</span><span data-lang="mr">इंटरनेट कनेक्शनशिवायही तुमच्या फोनच्या डायलरचा वापर करून तुमची डीबीटी स्थिती सहज तपासा.</span><span data-lang="bn">এমনকি ইন্টারনেট সংযোগ ছাড়াই আপনার ফোনের ডায়ালার ব্যবহার করে সহজেই আপনার ডিবিটি স্ট্যাটাস চেক করুন।</span><span data-lang="ta">இணைய இணைப்பு இல்லாமலேயே உங்கள் தொலைபேசியின் டயலரைப் பயன்படுத்தி உங்கள் DBT நிலையை எளிதாகச் சரிபார்க்கவும்.</span><span data-lang="te">ఇంటర్నెట్ కనెక్షన్ లేకుండా కూడా మీ ఫోన్ డయలర్‌ని ఉపయోగించి మీ DBT స్థితిని సులభంగా తనిఖీ చేయండి.</span>
+                </p>
+                 <div class="bg-gray-700 p-8 rounded-xl max-w-md mx-auto">
+                    <p class="text-lg mb-2">Dial this USSD code:</p>
+                    <p class="text-3xl font-mono font-bold tracking-widest bg-gray-900 p-4 rounded-lg">*99*99*1#</p>
+                    <p class="mt-4 text-gray-400">Follow the on-screen instructions to enter your Aadhaar number and view your linked bank account.</p>
+                 </div>
+            </div>
+        </section>
+
+        <!-- Socials Section -->
+        <section id="socials" class="bg-white py-16 md:py-24">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-8">
+                    <span data-lang="en">Follow Us on Social Media</span>
+                    <span data-lang="hi">सोशल मीडिया पर हमें फॉलो करें</span>
+                    <span data-lang="mr">सोशल मीडियावर आम्हाला फॉलो करा</span>
+                    <span data-lang="bn">সোশ্যাল মিডিয়ায় আমাদের অনুসরণ করুন</span>
+                    <span data-lang="ta">சமூக ஊடகங்களில் எங்களைப் பின்தொடரவும்</span>
+                    <span data-lang="te">సోషల్ మీడియాలో మమ్మల్ని అనుసరించండి</span>
+                </h2>
+                <p class="text-lg text-gray-600 mb-10 max-w-2xl mx-auto">
+                    <span data-lang="en">Stay updated with the latest news, announcements, and tips.</span>
+                    <span data-lang="hi">नवीनतम समाचार, घोषणाओं और युक्तियों से अपडेट रहें।</span>
+                    <span data-lang="mr">नवीनतम बातम्या, घोषणा आणि टिपांसह अद्ययावत रहा.</span>
+                    <span data-lang="bn">সর্বশেষ খবর, ঘোষণা এবং টিপস সঙ্গে আপ টু ডেট থাকুন।</span>
+                    <span data-lang="ta">சமீபத்திய செய்திகள், அறிவிப்புகள் மற்றும் உதவிக்குறிப்புகளுடன் புதுப்பித்த நிலையில் இருங்கள்.</span>
+                    <span data-lang="te">తాజా వార్తలు, ప్రకటనలు మరియు చిట్కాలతో నవీకరించబడండి.</span>
+                </p>
+                <div class="flex justify-center space-x-8">
+                    <a href="#" class="text-gray-500 hover:text-blue-600 transition">
+                        <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" /></svg>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-blue-400 transition">
+                        <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-pink-600 transition">
+                        <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.013-3.808-.06c-1.064-.049-1.791.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.345 4.22c.636-.247 1.363-.416 2.427.465C9.795 2.013 10.148 2 12.315 2zM12 7a5 5 0 100 10 5 5 0 000-10zm0-2a7 7 0 110 14 7 7 0 010-14zm6.406-2.186a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4z" clip-rule="evenodd" /></svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- FAQ Section -->
+        <section id="faq" class="py-16 md:py-24 bg-gray-100">
+            <div class="container mx-auto px-6 max-w-4xl">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">
+                    <span data-lang="en">Frequently Asked Questions</span><span data-lang="hi">अक्सर पूछे जाने वाले प्रश्न</span><span data-lang="mr">सतत विचारले जाणारे प्रश्न</span><span data-lang="bn">সচরাচর জিজ্ঞাস্য প্রশ্নাবলী</span><span data-lang="ta">அடிக்கடி கேட்கப்படும் கேள்விகள்</span><span data-lang="te">తరచుగా అడిగే ప్రశ్నలు</span>
+                </h2>
+                <div class="space-y-4">
+                    <!-- FAQ content remains here -->
+                     <div class="bg-white rounded-lg shadow-sm">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-6">
+                            <span class="text-lg font-semibold">Can I have multiple DBT-enabled accounts?</span>
+                            <svg class="w-6 h-6 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer px-6 pb-6">
+                            <p class="text-gray-600">No, you can only have one Aadhaar-seeded account for receiving DBT at any given time. If you seed a new account, the old one is automatically de-linked for DBT purposes.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm">
+                        <button class="faq-question w-full flex justify-between items-center text-left p-6">
+                            <span class="text-lg font-semibold">Does linking Aadhaar automatically enable DBT?</span>
+                            <svg class="w-6 h-6 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer px-6 pb-6">
+                            <p class="text-gray-600">Not necessarily. Linking is often just for e-KYC. You must specifically request your bank to seed your account for DBT and link it to the NPCI mapper.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech+Human Support Section -->
+        <section id="support" class="bg-white py-16 md:py-24">
+            <div class="container mx-auto px-6 text-center">
+                 <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">
+                     <span data-lang="en">Tech & Human Support</span><span data-lang="hi">तकनीकी और मानवीय सहायता</span><span data-lang="mr">तंत्रज्ञान आणि मानवी समर्थन</span><span data-lang="bn">প্রযুক্তি ও মানবিক সহায়তা</span><span data-lang="ta">தொழில்நுட்பம் மற்றும் மனித ஆதரவு</span><span data-lang="te">టెక్ & హ్యూమన్ సపోర్ట్</span>
+                </h2>
+                 <p class="text-lg text-gray-600 mb-10">
+                     <span data-lang="en">We're here to help, whether it's a technical issue or guidance you need.</span><span data-lang="hi">हम मदद के लिए यहां हैं, चाहे वह कोई तकनीकी समस्या हो या आपको मार्गदर्शन की आवश्यकता हो।</span><span data-lang="mr">आम्ही मदतीसाठी येथे आहोत, मग ती तांत्रिक समस्या असो किंवा तुम्हाला मार्गदर्शनाची आवश्यकता असो.</span><span data-lang="bn">আমরা সাহায্য করার জন্য এখানে আছি, তা প্রযুক্তিগত সমস্যা হোক বা আপনার নির্দেশিকা প্রয়োজন।</span><span data-lang="ta">நாங்கள் உதவ இங்கே இருக்கிறோம், அது தொழில்நுட்பச் சிக்கலாக இருந்தாலும் அல்லது உங்களுக்கு வழிகாட்டுதல் தேவைப்பட்டாலும்.</span><span data-lang="te">మేము సహాయం చేయడానికి ఇక్కడ ఉన్నాము, అది సాంకేతిక సమస్య అయినా లేదా మీకు మార్గదర్శకత్వం అవసరమైనా.</span>
+                </p>
+                 <div class="grid md:grid-cols-2 gap-12">
+                       <div class="text-center">
+                           <h3 class="font-bold text-xl mb-2">
+                               <span data-lang="en">Technical Support</span><span data-lang="hi">तकनीकी सहायता</span><span data-lang="mr">तांत्रिक समर्थन</span><span data-lang="bn">কারিগরি সহযোগিতা</span><span data-lang="ta">தொழில்நுட்ப ஆதரவு</span><span data-lang="te">సాంకేతిక మద్దతు</span>
+                            </h3>
+                           <p class="text-gray-500 mb-2">
+                               <span data-lang="en">For website or chatbot issues.</span><span data-lang="hi">वेबसाइट या चैटबॉट समस्याओं के लिए।</span><span data-lang="mr">वेबसाइट किंवा चॅटबॉट समस्यांसाठी.</span><span data-lang="bn">ওয়েবসাইট বা চ্যাটবট সমস্যার জন্য।</span><span data-lang="ta">இணையதளம் அல்லது சாட்போட் சிக்கல்களுக்கு.</span><span data-lang="te">వెబ్‌సైట్ లేదా చాట్‌బాట్ సమస్యల కోసం.</span>
+                            </p>
+                           <p class="text-blue-600">contact@dbtaware.org</p>
+                       </div>
+                        <div class="text-center">
+                           <h3 class="font-bold text-xl mb-2">
+                               <span data-lang="en">Guidance Counselors</span><span data-lang="hi">मार्गदर्शन परामर्शदाता</span><span data-lang="mr">मार्गदर्शन सल्लागार</span><span data-lang="bn">গাইডেন্স কাউন্সেলর</span><span data-lang="ta">வழிகாட்டுதல் ஆலோசகர்கள்</span><span data-lang="te">మార్గదర్శక సలహాదారులు</span>
+                            </h3>
+                           <p class="text-gray-500 mb-2">
+                               <span data-lang="en">For questions about scholarships and processes.</span><span data-lang="hi">छात्रवृत्ति और प्रक्रियाओं के बारे में प्रश्नों के लिए।</span><span data-lang="mr">शिष्यवृत्ती आणि प्रक्रियेबद्दलच्या प्रश्नांसाठी.</span><span data-lang="bn">বৃত্তি এবং প্রক্রিয়া সম্পর্কে প্রশ্নের জন্য।</span><span data-lang="ta">உதவித்தொகை மற்றும் செயல்முறைகள் பற்றிய கேள்விகளுக்கு.</span><span data-lang="te">స్కాలర్‌షిప్‌లు మరియు ప్రక్రియల గురించిన ప్రశ్నల కోసం.</span>
+                            </p>
+                           <p class="text-gray-700">+91 123 456 7890</p>
+                       </div>
+                 </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- CHATBOT -->
+    <div id="chatbot-container">
+        <div id="chatbot-window">
+            <div class="p-4 bg-blue-600 text-white text-center font-bold rounded-t-lg">DBT Mitra Helper</div>
+            <div id="chatbot-body" class="flex-1 p-4 overflow-y-auto bg-gray-100">
+                <div class="flex justify-start mb-2">
+                    <div class="text-sm p-2 bg-blue-100 text-blue-800 rounded-lg max-w-xs">
+                        <span data-lang="en">Welcome! How can I help you today?</span>
+                        <span data-lang="hi">नमस्ते! मैं आज आपकी कैसे मदद कर सकता हूँ?</span>
+                        <span data-lang="mr">नमस्कार! मी आज तुम्हाला कशी मदत करू शकतो?</span>
+                        <span data-lang="bn">স্বাগতম! আমি আজ আপনাকে কিভাবে সাহায্য করতে পারি?</span>
+                        <span data-lang="ta">வாருங்கள்! இன்று நான் உங்களுக்கு எப்படி உதவ முடியும்?</span>
+                        <span data-lang="te">స్వాగతం! ఈ రోజు నేను మీకు ఎలా సహాయం చేయగలను?</span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-3 border-t bg-white rounded-b-lg">
+                <div id="chatbot-quick-replies" class="flex flex-wrap gap-2 mb-2">
+                    <button class="text-xs bg-gray-200 hover:bg-gray-300 rounded-full px-3 py-1">What is DBT?</button>
+                    <button class="text-xs bg-gray-200 hover:bg-gray-300 rounded-full px-3 py-1">How to check status?</button>
+                </div>
+                <form id="chatbot-form" class="flex gap-2">
+                    <input type="text" id="chatbot-input" placeholder="Ask a question..." class="flex-1 border rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" class="bg-blue-600 text-white rounded-full p-2 hover:bg-blue-700 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.428A1 1 0 0010 16.57l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+        <button id="chatbot-toggle">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2024 DBT Mitra. All Rights Reserved.</p>
+            <p class="text-sm text-gray-400 mt-2">An initiative to enhance student financial awareness.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- GAMIFICATION LOGIC ---
+        const gamification = {
+            totalPoints: 200, // Increased total points
+            score: 0,
+            visitedPages: [],
+            completedActions: [],
+
+            init() {
+                this.score = parseInt(localStorage.getItem('awarenessScore') || '0', 10);
+                this.visitedPages = JSON.parse(localStorage.getItem('visitedPages') || '[]');
+                this.completedActions = JSON.parse(localStorage.getItem('completedActions') || '[]');
+                this.updateUI();
+                this.trackPageVisit();
+                this.addEventListeners();
+            },
+
+            addScore(points, actionId) {
+                if (this.completedActions.includes(actionId)) {
+                    return; 
+                }
+                this.score += points;
+                this.completedActions.push(actionId);
+                localStorage.setItem('awarenessScore', this.score);
+                localStorage.setItem('completedActions', JSON.stringify(this.completedActions));
+                this.showPointsNotification(points);
+                this.updateUI();
+            },
+
+            updateUI() {
+                const scoreEl = document.getElementById('awareness-score');
+                const progressBarEl = document.getElementById('progress-bar');
+                if (scoreEl) scoreEl.textContent = this.score;
+                if (progressBarEl) {
+                    const progress = Math.min((this.score / this.totalPoints) * 100, 100);
+                    progressBarEl.style.width = `${progress}%`;
+                }
+            },
+
+            trackPageVisit() {
+                const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+                if (!this.visitedPages.includes(currentPage)) {
+                    this.visitedPages.push(currentPage);
+                    localStorage.setItem('visitedPages', JSON.stringify(this.visitedPages));
+                    
+                    let points = 0;
+                    let actionId = '';
+                    switch (currentPage) {
+                        case 'index.html': points = 10; actionId = 'visit_index'; break;
+                        case 'response-yes.html': points = 20; actionId = 'visit_yes'; break;
+                        case 'response-no.html': points = 20; actionId = 'visit_no'; break;
+                        case 'response-maybe.html': points = 20; actionId = 'visit_maybe'; break;
+                        case 'response-idk.html': points = 20; actionId = 'visit_idk'; break;
+                    }
+                    if (points > 0) {
+                         this.addScore(points, actionId);
+                    }
+                }
+            },
+
+            showPointsNotification(points) {
+                const toast = document.createElement('div');
+                toast.className = 'point-toast';
+                toast.textContent = `+${points} Awareness Points!`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 100);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => document.body.removeChild(toast), 300);
+                }, 2500);
+            },
+            
+            addEventListeners() {
+                // Event listeners for index.html only
+                if ((window.location.pathname.split('/').pop() || 'index.html') === 'index.html') {
+                    // DigiLocker
+                    document.getElementById('connect-digilocker').addEventListener('click', () => {
+                        document.getElementById('digilocker-start').classList.add('hidden');
+                        document.getElementById('digilocker-certificate').classList.remove('hidden');
+                        gamification.addScore(25, 'digilocker_verify');
+                    });
+                    
+                    // Game
+                    document.querySelectorAll('.game-option').forEach(option => {
+                        option.addEventListener('click', (e) => {
+                            const isCorrect = e.currentTarget.hasAttribute('data-correct');
+                            const resultEl = document.getElementById('game-result');
+                            const badgeEl = document.getElementById('badge-container');
+                            
+                            if (isCorrect) {
+                                resultEl.textContent = "Correct! This is the only account that guarantees DBT deposits.";
+                                resultEl.className = "mt-6 text-center font-bold text-green-600";
+                                badgeEl.classList.remove('hidden');
+                                badgeEl.classList.add('flex');
+                                gamification.addScore(15, 'game_win');
+                            } else {
+                                resultEl.textContent = "Not quite. Simple linking isn't enough for DBT.";
+                                resultEl.className = "mt-6 text-center font-bold text-red-600";
+                                badgeEl.classList.add('hidden');
+                            }
+                        });
+                    });
+                }
+            }
+        };
+        
+        // --- AI CHATBOT LOGIC ---
+        const chatbot = {
+            isOpen: false,
+
+            init() {
+                const toggle = document.getElementById('chatbot-toggle');
+                toggle.addEventListener('click', () => this.toggleChatbot());
+
+                const form = document.getElementById('chatbot-form');
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const input = document.getElementById('chatbot-input');
+                    const query = input.value.trim();
+                    if (query) {
+                        this.sendMessage(query);
+                        input.value = '';
+                    }
+                });
+                
+                document.querySelectorAll('#chatbot-quick-replies button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const input = document.getElementById('chatbot-input');
+                        input.value = button.textContent;
+                        input.focus();
+                    });
+                });
+            },
+
+            toggleChatbot() {
+                this.isOpen = !this.isOpen;
+                document.getElementById('chatbot-window').classList.toggle('open');
+                if (this.isOpen) {
+                    gamification.addScore(5, 'open_chatbot');
+                }
+            },
+
+            addMessage(text, sender = 'user') {
+                const body = document.getElementById('chatbot-body');
+                const msgWrapper = document.createElement('div');
+                const msgBubble = document.createElement('div');
+                
+                msgWrapper.className = `flex mb-2 ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+                
+                if (sender === 'user') {
+                     msgBubble.className = "text-sm p-2 bg-gray-200 text-gray-800 rounded-lg max-w-xs";
+                     msgBubble.textContent = text;
+                } else if (sender === 'bot') {
+                     msgBubble.className = "text-sm p-2 bg-blue-100 text-blue-800 rounded-lg max-w-xs";
+                     msgBubble.textContent = text;
+                } else { // for loading indicator
+                     msgBubble.id = 'loading-indicator';
+                     msgBubble.className = "text-sm p-2 bg-blue-100 text-blue-800 rounded-lg max-w-xs";
+                     msgBubble.innerHTML = '<div class="flex items-center gap-2"><div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div><div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div><div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div></div>';
+                }
+
+                msgWrapper.appendChild(msgBubble);
+                body.appendChild(msgWrapper);
+                body.scrollTop = body.scrollHeight;
+            },
+
+            sendMessage(query) {
+                this.addMessage(query, 'user');
+                this.addMessage('', 'loading'); // Show loading indicator
+                this.getAiResponse(query);
+            },
+            
+            async getAiResponse(userQuery) {
+                const systemPrompt = "You are DBT Mitra Helper, a friendly and helpful AI assistant for students in India. Your goal is to provide clear, concise, and accurate information about Direct Benefit Transfer (DBT), Aadhaar seeding, scholarships, and related government schemes. Answer questions directly and guide users on processes like checking their DBT status or linking their Aadhaar. Keep your answers simple and easy to understand. Do not answer questions outside of this scope.";
+                const apiKey = "AIzaSyBvqfZIyD3bPdfcGcvTQxtW5GrD-UtMMuM"; // Leave as-is, it will be handled by the environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    },
+                };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    const loadingIndicator = document.getElementById('loading-indicator');
+                    if (loadingIndicator) loadingIndicator.parentElement.remove();
+                    
+                    const candidate = result.candidates?.[0];
+                    if (candidate && candidate.content?.parts?.[0]?.text) {
+                        const aiText = candidate.content.parts[0].text;
+                        this.addMessage(aiText, 'bot');
+                    } else {
+                        this.addMessage("Sorry, I couldn't get a response. Please try again.", 'bot');
+                    }
+
+                } catch (error) {
+                    console.error("Chatbot API error:", error);
+                    const loadingIndicator = document.getElementById('loading-indicator');
+                    if (loadingIndicator) loadingIndicator.parentElement.remove();
+                    this.addMessage("Sorry, something went wrong. Please check your connection and try again.", 'bot');
+                }
+            }
+        };
+
+
+        // --- LANGUAGE SWITCHER LOGIC ---
+        const languageSwitcher = {
+            currentLang: 'en',
+            init() {
+                document.getElementById('language-switcher').addEventListener('change', (e) => {
+                    this.setLanguage(e.target.value);
+                });
+            },
+            setLanguage(lang) {
+                if(lang === this.currentLang) return;
+                this.currentLang = lang;
+                document.querySelectorAll('[data-lang]').forEach(el => {
+                    el.style.display = 'none';
+                });
+                document.querySelectorAll(`[data-lang="${lang}"]`).forEach(el => {
+                    // Use 'inline' or 'block' based on original display style if needed, but 'inline' works for spans
+                    el.style.display = 'inline'; 
+                });
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize all modules
+            gamification.init();
+            chatbot.init();
+            languageSwitcher.init();
+
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Slideshow Logic
+            const slides = document.querySelectorAll('#slides .slide');
+            const dotsContainer = document.getElementById('slide-dots');
+            let currentSlide = 0;
+
+            if(slides.length > 0) {
+                slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.classList.add('w-3', 'h-3', 'rounded-full', 'transition', 'duration-300');
+                    dot.classList.add(i === 0 ? 'bg-blue-600' : 'bg-gray-400', 'hover:bg-blue-500');
+                    dot.addEventListener('click', () => showSlide(i));
+                    dotsContainer.appendChild(dot);
+                });
+                
+                const dots = dotsContainer.querySelectorAll('button');
+
+                function showSlide(index) {
+                    slides.forEach((slide, i) => { slide.classList.remove('active'); dots[i].classList.remove('bg-blue-600'); dots[i].classList.add('bg-gray-400'); });
+                    slides[index].classList.add('active');
+                    dots[index].classList.add('bg-blue-600');
+                    dots[index].classList.remove('bg-gray-400');
+                    currentSlide = index;
+                }
+
+                document.getElementById('next-slide').addEventListener('click', () => {
+                    let next = currentSlide + 1; if (next >= slides.length) { next = 0; } showSlide(next);
+                });
+
+                document.getElementById('prev-slide').addEventListener('click', () => {
+                    let prev = currentSlide - 1; if (prev < 0) { prev = slides.length - 1; } showSlide(prev);
+                });
+            }
+
+            // FAQ Accordion Logic
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            faqQuestions.forEach((question, index) => {
+                question.addEventListener('click', () => {
+                    gamification.addScore(5, `faq_open_${index + 1}`);
+                    const answer = question.nextElementSibling;
+                    const icon = question.querySelector('svg');
+
+                    if (answer.style.maxHeight) {
+                        answer.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                         document.querySelectorAll('.faq-answer').forEach(ans => {
+                             if (ans.style.maxHeight) {
+                                 ans.style.maxHeight = null;
+                                 ans.previousElementSibling.querySelector('svg').style.transform = 'rotate(0deg)';
+                             }
+                         });
+                        answer.style.maxHeight = answer.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
+
