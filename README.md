@@ -143,8 +143,8 @@ By:
 
 ## Author
 
-**Kuntal Saha**/
-B.Tech Student/
+**Kuntal Saha**\
+B.Tech Student\
 Smart India Hackathon 2025 Participant
 
 ------------------------------------------------------------------------
