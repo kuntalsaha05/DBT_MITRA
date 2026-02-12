@@ -1,203 +1,154 @@
-🌟 DBT Mitra – Enhancing Student Awareness on Aadhaar & DBT
+# DBT Mitra
 
-🚀 A Smart India Hackathon (SIH25059) solution to bridge the awareness gap between Aadhaar-linked and DBT-enabled Aadhaar-seeded bank accounts.
+### Enhancing Student Awareness on Aadhaar & DBT (SIH25059)
 
-📌 Problem Statement
+A Smart India Hackathon solution to bridge the awareness gap between:
 
-Many students applying for Pre-Matric & Post-Matric Scholarships (SC students) face delays in receiving funds because they do not understand the difference between:
+-   **Aadhaar-Linked Bank Account**
+-   **DBT-Enabled Aadhaar-Seeded Bank Account**
 
-✅ Aadhaar-Linked Bank Account
+Government scholarships are transferred **only through DBT-enabled
+Aadhaar-seeded accounts via NPCI mapper**.
 
-✅ DBT-Enabled Aadhaar-Seeded Bank Account
+------------------------------------------------------------------------
 
-Government scholarships are transferred ONLY through DBT-enabled Aadhaar-seeded accounts via NPCI mapper.
+## Problem Statement
 
-This project aims to solve this awareness gap through an interactive, multilingual, gamified platform.
+Many students applying for **Pre-Matric & Post-Matric Scholarships (SC
+students)** face delays in receiving funds because they do not
+understand the difference between:
 
-🎯 Objective
+-   Aadhaar-linked account (used for identity verification)\
+-   DBT-enabled Aadhaar-seeded account (used for receiving government
+    benefits)
 
-Increase student awareness about DBT and Aadhaar seeding
+This project solves that awareness gap using an interactive and gamified
+platform.
 
-Reduce scholarship disbursement delays
+------------------------------------------------------------------------
 
-Promote digital financial literacy
+## Objectives
 
-Provide easy, step-by-step guidance
+-   Increase awareness about DBT and Aadhaar seeding\
+-   Reduce scholarship disbursement delays\
+-   Promote digital financial literacy\
+-   Provide clear step-by-step guidance
 
-🌐 Live Website Pages
+------------------------------------------------------------------------
 
-This project includes the following HTML pages:
+## Project Structure
 
-🏠 index.html – Main Awareness Portal 
+    dbt-mitra/
+    │
+    ├── index.html
+    ├── response-yes.html
+    ├── response-no.html
+    ├── response-maybe.html
+    ├── response-idk.html
+    └── README.md
 
-index
+------------------------------------------------------------------------
 
-❓ response-idk.html – If user doesn’t know status 
+## Key Features
 
-response-idk
+### 1. Awareness Slideshow
 
-🤔 response-maybe.html – How to check DBT status 
+-   Explains Aadhaar-Linked vs DBT-Enabled\
+-   NPCI Mapper concept\
+-   Why only ONE account can be DBT-enabled at a time
 
-response-maybe
+### 2. Gamification System
 
-❌ response-no.html – How to enable DBT 
+-   Awareness Score\
+-   Progress bar\
+-   Page visit tracking\
+-   LocalStorage-based rewards
 
-response-no
+### 3. Multi-Language Support
 
-✅ response-yes.html – If DBT already enabled 
+-   English\
+-   Hindi\
+-   Marathi\
+-   Bengali\
+-   Tamil\
+-   Telugu
 
-response-yes
+### 4. DBT Wallet Dashboard (Prototype UI)
 
-🚀 Key Features
-🎓 1. Awareness Slideshow
+-   Scholarship credit status\
+-   Pending payments\
+-   Linked DBT account
 
-Explains clearly:
+### 5. DigiLocker Verification (Prototype)
 
-Aadhaar-Linked vs DBT-Enabled Account
+-   Simulated DBT certificate\
+-   Awareness about official verification
 
-NPCI Mapper concept
+### 6. Step-by-Step DBT Enable Guide
 
-Why only ONE account can be DBT-enabled
+-   Online seeding via NPCI\
+-   Offline bank branch process\
+-   USSD method (*99*99\*1#)
 
-🎮 2. Gamification System
+------------------------------------------------------------------------
 
-Awareness Score tracking
+## Tech Stack
 
-Progress bar
+-   HTML5\
+-   Tailwind CSS (CDN)\
+-   Vanilla JavaScript\
+-   LocalStorage API\
+-   Fully Responsive Design
 
-Local storage-based reward system
+------------------------------------------------------------------------
 
-Page visit tracking with points
+## How to Run Locally
 
-🌍 3. Multi-Language Support
-
-Supports:
-
-English
-
-Hindi
-
-Marathi
-
-Bengali
-
-Tamil
-
-Telugu
-
-Language switching is implemented dynamically using data-lang attributes.
-
-📊 4. DBT Wallet Dashboard (Prototype UI)
-
-Simulated dashboard showing:
-
-Scholarship credit status
-
-Pending payments
-
-Linked DBT account
-
-🔐 5. DigiLocker Integration (Prototype)
-
-Simulated DBT-enabled certificate
-
-Verification concept UI
-
-📲 6. NPCI Verification Guide
-
-Includes:
-
-Online NPCI BASE portal steps
-
-USSD method (9999*1#)
-
-Seeding & movement process
-
-🏦 7. Online + Offline Seeding Guide
-
-Step-by-step instructions to:
-
-Enable DBT online
-
-Submit Aadhaar Seeding Form offline at bank
-
-🛠️ Tech Stack
-
-HTML5
-
-Tailwind CSS (via CDN)
-
-Vanilla JavaScript
-
-LocalStorage API
-
-Responsive Design
-
-🧠 Innovation Highlights
-
-✔ Gamified awareness model
-✔ Multilingual inclusion
-✔ Digital literacy focus
-✔ Scholarship-specific guidance
-✔ Simple static deployment (GitHub Pages compatible)
-
-📦 How to Run Locally
+``` bash
 git clone https://github.com/yourusername/dbt-mitra.git
 cd dbt-mitra
 open index.html
+```
 
+No backend required --- fully static website.
 
-No backend required. Fully static website.
+------------------------------------------------------------------------
 
-🌍 Deployment
+## Deployment
 
 You can deploy using:
 
-GitHub Pages
+-   GitHub Pages\
+-   Netlify\
+-   Vercel\
+-   Firebase Hosting
 
-Netlify
+------------------------------------------------------------------------
 
-Vercel
+## SIH25059 Alignment
 
-Firebase Hosting
+This solution directly addresses:
 
-🏆 SIH25059 Alignment
-
-This project directly addresses:
-
-“Enhancing Student Awareness on difference between Aadhaar linked and Direct Beneficiary Transfer (DBT) enabled Aadhaar seeded bank account.”
+> Enhancing Student Awareness on difference between Aadhaar linked and
+> DBT-enabled Aadhaar seeded bank account.
 
 By:
 
-Providing structured education
+-   Educating students clearly\
+-   Providing actionable steps\
+-   Reducing DBT payment failures\
+-   Promoting digital inclusion
 
-Offering actionable next steps
+------------------------------------------------------------------------
 
-Promoting financial awareness
+## Author
 
-Reducing DBT failure cases
-
-📌 Future Enhancements
-
-Real NPCI API integration
-
-Real-time DBT status checker
-
-SMS reminder system
-
-Bank integration
-
-Government dashboard for analytics
-
-Scholarship tracking system
-
-👨‍💻 Author
-
-Kuntal Saha
-B.Tech Student
+**Kuntal Saha**\
+B.Tech Student\
 Smart India Hackathon 2025 Participant
 
-📜 License
+------------------------------------------------------------------------
 
-This project is created for academic & hackathon purposes.
-Open for educational use.
+## License
+
+This project is created for academic and hackathon purposes.
