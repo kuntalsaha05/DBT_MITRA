@@ -53,51 +53,51 @@ platform.
 
 ### 1. Awareness Slideshow
 
--   Explains Aadhaar-Linked vs DBT-Enabled\
--   NPCI Mapper concept\
+-   Explains Aadhaar-Linked vs DBT-Enabled
+-   NPCI Mapper concept
 -   Why only ONE account can be DBT-enabled at a time
 
 ### 2. Gamification System
 
--   Awareness Score\
--   Progress bar\
--   Page visit tracking\
+-   Awareness Score
+-   Progress bar
+-   Page visit tracking
 -   LocalStorage-based rewards
 
 ### 3. Multi-Language Support
 
--   English\
--   Hindi\
--   Marathi\
--   Bengali\
--   Tamil\
+-   English
+-   Hindi
+-   Marathi
+-   Bengali
+-   Tamil
 -   Telugu
 
 ### 4. DBT Wallet Dashboard (Prototype UI)
 
--   Scholarship credit status\
--   Pending payments\
+-   Scholarship credit status
+-   Pending payments
 -   Linked DBT account
 
 ### 5. DigiLocker Verification (Prototype)
 
--   Simulated DBT certificate\
+-   Simulated DBT certificate
 -   Awareness about official verification
 
 ### 6. Step-by-Step DBT Enable Guide
 
--   Online seeding via NPCI\
--   Offline bank branch process\
--   USSD method (*99*99\*1#)
+-   Online seeding via NPCI
+-   Offline bank branch process
+-   USSD method (*99*99*1#)
 
 ------------------------------------------------------------------------
 
 ## Tech Stack
 
--   HTML5\
--   Tailwind CSS (CDN)\
--   Vanilla JavaScript\
--   LocalStorage API\
+-   HTML5
+-   Tailwind CSS (CDN)
+-   Vanilla JavaScript
+-   LocalStorage API
 -   Fully Responsive Design
 
 ------------------------------------------------------------------------
@@ -118,9 +118,9 @@ No backend required --- fully static website.
 
 You can deploy using:
 
--   GitHub Pages\
--   Netlify\
--   Vercel\
+-   GitHub Pages
+-   Netlify
+-   Vercel
 -   Firebase Hosting
 
 ------------------------------------------------------------------------
@@ -134,17 +134,17 @@ This solution directly addresses:
 
 By:
 
--   Educating students clearly\
--   Providing actionable steps\
--   Reducing DBT payment failures\
+-   Educating students clearly
+-   Providing actionable steps
+-   Reducing DBT payment failures
 -   Promoting digital inclusion
 
 ------------------------------------------------------------------------
 
 ## Author
 
-**Kuntal Saha**\
-B.Tech Student\
+**Kuntal Saha**
+B.Tech Student
 Smart India Hackathon 2025 Participant
 
 ------------------------------------------------------------------------
