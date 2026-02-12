@@ -105,8 +105,8 @@ platform.
 ## How to Run Locally
 
 ``` bash
-git clone https://github.com/yourusername/dbt-mitra.git
-cd dbt-mitra
+https://github.com/kuntalsaha05/DBT_MITRA.git
+cd DBT_MITRA
 open index.html
 ```
 
